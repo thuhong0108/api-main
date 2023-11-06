@@ -4,19 +4,21 @@ import User from '../models/User.js'
 import router from './user.js'
 
 router.post('/login', async (req, res) => {
-    const { userName, password } = req.body;
+    const { Username, Password } = req.body;
 
     try {
-        const user = await User.findOne({ userName });
+        const user = await User.findOne({ Username });
 
-        if (user && password === user.password) {
+        // nếu tìm thấy user
+        if (user && Password === user.Password) {
+            const data = { isAdmin: user.IsAdmin };
             // tạo token
-            const accessToken = jwt.sign( { id: user._id, isAdmin: user.isAdmin }, process.env.ACCESS_TOKEN_SECRET );
+            const accessToken = jwt.sign(data, process.env.ACCESS_TOKEN_SECRET);
 
             res.status(200).json({ 
                 success: true,
                 message: 'Đăng nhập thành công',
-                data: accessToken
+                token: accessToken
             });
         } else {
             res.status(500).json({

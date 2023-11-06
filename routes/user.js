@@ -43,13 +43,13 @@ router.get('/:id', verifyPermission, async (req, res) => {
 })
 
 // ADD USER
-router.post('/create', verifyPermission, async (req, res) => {
-    const { userName, email } = req.body;
+router.post('/create', async (req, res) => {
+    const { Username, Email } = req.body;
 
     try {
         // Kiểm tra userName hoặc email của user mới thêm có tồn tại hay chưa
-        const existUserName = await User.findOne({ userName: userName });
-        const existEmail = await User.findOne({ email: email });
+        const existUserName = await User.findOne({ Username: Username });
+        const existEmail = await User.findOne({ Email: Email });
 
         if (existUserName || existEmail) {
             res.status(400).json({
@@ -78,11 +78,11 @@ router.post('/create', verifyPermission, async (req, res) => {
 // EDIT USER
 router.put('/edit/:id', verifyPermission, async (req, res) => {
     const id = req.params.id;
-    const { userName, email } = req.body;
+    const { Username, Email } = req.body;
 
     try {
-        const existUserName = await User.findOne({ userName: userName });
-        const existEmail = await User.findOne({ email: email });
+        const existUserName = await User.findOne({ Username: Username });
+        const existEmail = await User.findOne({ Email: Email });
 
         if(!existUserName && !existEmail) { 
             const userUpdated = await User.findOneAndUpdate(
@@ -115,12 +115,11 @@ router.put('/edit/:id', verifyPermission, async (req, res) => {
 // DELETE USER
 router.delete('/delete/:id', verifyPermission, async (req, res) => {
     try {
-        const userDeleted = await User.findByIdAndDelete(req.params.id);
+        await User.findByIdAndDelete(req.params.id);
 
         res.status(200).json({
             success: true,
-            message: 'Xóa user thành công',
-            data: userDeleted
+            message: 'Xóa user thành công'
          });
 
     } catch (error) {

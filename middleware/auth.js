@@ -7,29 +7,31 @@ import jwt from 'jsonwebtoken';
 */
 
 export const verifyPermission = (req, res, next) => {
-    // lấy token trong phần `header`
+    // lấy token trong phần `Headers`
     const token = req.header('Authorization');
 
+    //nếu không tìm thấy token gửi lên
     if (!token) {
         res.status(401).json({
             success: false,
-            message: "Bạn chưa được xác thực"
+            message: "Không tìm thấy token"
         });
     }
 
     try {
-        // kiểm tra xem token có hợp lệ không, nếu không hợp lệ sẽ chạy function `catch` ở dưới
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        //jwt.verify: kiểm tra xem token có hợp lệ không, nếu không hợp lệ sẽ chạy function `catch` ở dưới
+        const data = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
         // nếu token hợp lệ, tiếp tục kiểm tra người dùng có phải là admin hay không
-        if (decoded.isAdmin) {
+        if (data.IsAdmin) {
             next();
         } else {
             res.status(403).json({ 
                 success: false,
-                message: 'Bạn không có quyền thực hiện yêu cầu này'
+                message: 'Bạn không phải phải là admin'
             });
         }
+
     } catch (error) {
         res.status(403).json({
             success: false,
